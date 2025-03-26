@@ -1,43 +1,32 @@
-from flask import Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-import datetime
-from database import get_db_connection
-from config import SECRET_KEY 
+import bcrypt
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity
+from models.user_model import create_user, get_user_by_email, blacklist_token
 
-auth = Blueprint('auth', __name__)
-
-@auth.route('/register', methods=['POST'])
-def register():
-    data = request.json
+# Registro de usuario
+def register_user(data):
     username = data['username']
     email = data['email']
-    password = generate_password_hash(data['password'])
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), salt).decode('utf-8')
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)", (username, email, password))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    create_user(username, email, hashed_password)
+    return {"message": "User registered successfully"}, 201
 
-    return jsonify({"message": "User registered successfully"}), 201
-
-@auth.route('/login', methods=['POST'])
-def login():
-    data = request.json
+# Inicio de sesión
+def login_user(data):
     email = data['email']
-    password = data['password']
+    password = data['password'].encode('utf-8')
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-    user = cursor.fetchone()
-    cursor.close()
-    conn.close()
+    user = get_user_by_email(email)
 
-    if user and check_password_hash(user['password_hash'], password):
-        token = jwt.encode({"user_id": user['id'], "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
-        return jsonify({"token": token})
+    if user and bcrypt.checkpw(password, user['password_hash'].encode('utf-8')):
+        token = create_access_token(identity=user['id'])
+        return {"token": token}
 
-    return jsonify({"message": "Invalid credentials"}), 401
+    return {"message": "Invalid credentials"}, 401
+
+# Cerrar sesión
+def logout_user():
+    jti = get_jwt()["jti"]
+    blacklist_token(jti)
+    return {"message": "Logout successful"}, 200
