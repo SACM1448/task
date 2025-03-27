@@ -1,4 +1,4 @@
-from database import get_db_connection
+from app.database import get_db_connection
 
 class Task:
     @staticmethod
@@ -20,7 +20,17 @@ class Task:
         cursor.close()
         conn.close()
         return tasks
-
+    
+    @staticmethod
+    def get_task_by_id(task_id):
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM tasks WHERE id = %s", (task_id,))
+        task = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return task
+    
     @staticmethod
     def update_task_status(task_id, status):
         conn = get_db_connection()

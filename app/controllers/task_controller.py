@@ -1,5 +1,5 @@
 from flask_jwt_extended import get_jwt_identity
-from models.task_model import Task
+from ..models.task_model import Task
 
 class TaskController:
     @staticmethod
@@ -22,6 +22,14 @@ class TaskController:
 
     @staticmethod
     def update_task_status(task_id, data):
+        user_id = get_jwt_identity()
+        task = Task.get_task_by_id(task_id)
+
+        if not task:
+            return {"error": "Task not found"}, 404
+        if task["user_id"] != user_id:
+            return {"error": "Unauthorized"}, 403
+
         status = data.get("status")
         if status is None:
             return {"error": "Status is required"}, 400
@@ -31,5 +39,13 @@ class TaskController:
 
     @staticmethod
     def delete_task(task_id):
+        user_id = get_jwt_identity()
+        task = Task.get_task_by_id(task_id)
+
+        if not task:
+            return {"error": "Task not found"}, 404
+        if task["user_id"] != user_id:
+            return {"error": "Unauthorized"}, 403
+
         Task.delete_task(task_id)
         return {"message": "Task deleted"}, 200

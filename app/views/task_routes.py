@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
-from controllers.task_controller import TaskController
+from ..controllers.task_controller import TaskController
 
 task_bp = Blueprint("task_bp", __name__)
 
