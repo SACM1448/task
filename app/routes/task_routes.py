@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
-from ..controllers.task_controller import TaskController
-
+from app.controllers.task_controller import TaskController 
 task_bp = Blueprint("task_bp", __name__)
 
 @task_bp.route("/tasks", methods=["POST"])

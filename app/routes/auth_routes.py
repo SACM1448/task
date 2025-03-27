@@ -1,23 +1,26 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.controllers.auth_controller import register_user, login_user, logout_user
+from app.controllers.auth_controller import AuthController
 
 auth = Blueprint('auth', __name__)
 
 @auth.route('/register', methods=['POST'])
 def register():
     data = request.json
-    return jsonify(*register_user(data))
+    response, status = AuthController.register_user(data) 
+    return jsonify(response), status
 
 @auth.route('/login', methods=['POST'])
 def login():
     data = request.json
-    return jsonify(*login_user(data))
+    response, status = AuthController.login_user(data)  
+    return jsonify(response), status
 
 @auth.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    return jsonify(*logout_user())
+    response, status = AuthController.logout_user()
+    return jsonify(response), status
 
 @auth.route('/protected', methods=['GET'])
 @jwt_required()

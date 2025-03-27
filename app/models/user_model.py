@@ -1,4 +1,4 @@
-from app.database import get_db_connection
+from app.config.database import get_db_connection
 import bcrypt
 
 class UserModel:

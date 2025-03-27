@@ -1,34 +1,14 @@
-import bcrypt
-from flask_jwt_extended import create_access_token, get_jwt
-from app.models.user_model import UserModel
-from app.models.token_blacklist import TokenBlacklist 
+from app.services.auth_service import AuthService
 
-# Registro de usuario
-def register_user(data):
-    username = data['username']
-    email = data['email']
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), salt).decode('utf-8')
+class AuthController:
+    @staticmethod
+    def register_user(data):
+        return AuthService.register_user(data['username'], data['email'], data['password'])
 
-    UserModel.create_user(username, email, hashed_password)
+    @staticmethod
+    def login_user(data):
+        return AuthService.login_user(data['email'], data['password'])
 
-    return {"message": "User registered successfully"}, 201
-
-# Inicio de sesión
-def login_user(data):
-    email = data['email']
-    password = data['password'].encode('utf-8')
-
-    user = UserModel.get_user_by_email(email)
-
-    if user and bcrypt.checkpw(password, user['password_hash'].encode('utf-8')):
-        token = create_access_token(identity=user['id'])
-        return {"token": token}
-
-    return {"message": "Invalid credentials"}, 401
-
-# Cerrar sesión (Blacklist del token)
-def logout_user():
-    jti = get_jwt()["jti"]
-    TokenBlacklist.blacklist_token(jti) 
-    return {"message": "Logout successful"}, 200
+    @staticmethod
+    def logout_user():
+        return AuthService.logout_user()
