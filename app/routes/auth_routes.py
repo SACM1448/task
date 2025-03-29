@@ -22,6 +22,22 @@ def logout():
     response, status = AuthController.logout_user()
     return jsonify(response), status
 
+@auth.route('/update', methods=['PUT'])
+@jwt_required()
+def update_user():
+    user_id = str(get_jwt_identity())  
+    data = request.json
+    response, status = AuthController.update_user(user_id, data)
+    return jsonify(response), status
+
+
+@auth.route('/delete', methods=['DELETE'])
+@jwt_required()
+def delete_user():
+    user_id = get_jwt_identity()
+    response, status = AuthController.delete_user(user_id)
+    return jsonify(response), status
+
 @auth.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():

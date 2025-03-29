@@ -1,4 +1,4 @@
-## Intalar entorno vitual
+## Instalar entorno vitual
 python -m pip install virtualenv
 python -m venv venv
 
@@ -34,3 +34,26 @@ CREATE TABLE blacklisted_tokens (
 
 ## Ejecutar el progrma
 python -m app.run
+
+## JWT
+
+Authorization Bearer token
+
+
+## New User
+{
+    "username": "SACM",
+    "email": "SACM@example.com",
+    "password": "12345*"
+}
+
+## new task
+
+{
+    "title": "Revisar informes",
+    "description": "Revisar los informes semanales y enviar feedback.",
+    "due_date": "2025-04-01",
+    "priority": "Alta",
+    "status": "completed",
+    "assigned_to": 3
+}

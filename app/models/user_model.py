@@ -4,7 +4,7 @@ import bcrypt
 class UserModel:
     @staticmethod
     def create_user(username, email, password):
-        hashed_password = UserModel.hash_password(password)
+        hashed_password = password
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)", 
@@ -45,13 +45,3 @@ class UserModel:
     @staticmethod
     def verify_password(stored_password, provided_password):
         return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password.encode('utf-8'))
-
-    @staticmethod
-    def change_password(user_id, new_password):
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-        cursor.execute("UPDATE users SET password_hash=%s WHERE id=%s", (hashed_password, user_id))
-        conn.commit()
-        cursor.close()
-        conn.close()
