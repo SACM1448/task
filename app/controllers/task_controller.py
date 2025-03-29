@@ -15,6 +15,7 @@ class TaskController:
     @staticmethod
     def update_task_status(task_id, data):
         user_id = get_jwt_identity()
+        print(f"User ID from token: {user_id}") 
         return TaskService.update_task_status(user_id, task_id, data.get("status"))
 
     @staticmethod

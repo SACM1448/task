@@ -19,9 +19,11 @@ class TaskService:
         task = Task.get_task_by_id(task_id)
 
         if not task:
-            return {"error": "Task not found"}, 404
-        if task["user_id"] != user_id:
+            return {"error": "Task not found"}, 404 
+
+        if str(task["user_id"]) != str(user_id):  
             return {"error": "Unauthorized"}, 403
+        
         if status is None:
             return {"error": "Status is required"}, 400
 
@@ -34,7 +36,7 @@ class TaskService:
 
         if not task:
             return {"error": "Task not found"}, 404
-        if task["user_id"] != user_id:
+        if str(task["user_id"]) != str(user_id):
             return {"error": "Unauthorized"}, 403
 
         Task.delete_task(task_id)

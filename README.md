@@ -54,6 +54,11 @@ Authorization Bearer token
     "description": "Revisar los informes semanales y enviar feedback.",
     "due_date": "2025-04-01",
     "priority": "Alta",
-    "status": "completed",
+    "status": "pending",
     "assigned_to": 3
+}
+
+## PUT task
+{
+    "status": "completed"
 }
