@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.controllers.auth_controller import AuthController
+from app.config.limiter_config import limiter 
 
 auth = Blueprint('auth', __name__)
 
@@ -11,6 +12,7 @@ def register():
     return jsonify(response), status
 
 @auth.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     data = request.json
     response, status = AuthController.login_user(data)  
